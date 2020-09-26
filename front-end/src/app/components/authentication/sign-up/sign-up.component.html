@@ -1,0 +1,63 @@
+<div class="content">
+	<div class="sign-up box-shadow">
+		<h2>Create an account</h2>
+
+		<form [formGroup]="registrationForm">
+			<div>
+				<mat-form-field class="full-width">
+					<mat-icon matPrefix svgIcon="user"></mat-icon>
+					<mat-label>Username</mat-label>
+					<input matInput type="text" placeholder="Username" formControlName="username">
+
+					<mat-error *ngIf="registrationForm.get('username').errors != null && registrationForm.get('username').errors.hasOwnProperty('required') && (registrationForm.get('username').dirty || registrationForm.get('username').touched)">
+						This field is required.
+					</mat-error>
+				</mat-form-field>
+
+				<mat-form-field class="full-width">
+					<mat-icon matPrefix svgIcon="lock"></mat-icon>
+					<mat-label>Password</mat-label>
+					<input matInput type="password" placeholder="Password" formControlName="password">
+
+					<mat-error *ngIf="registrationForm.get('password').errors != null && registrationForm.get('password').errors.hasOwnProperty('required') && (registrationForm.get('password').dirty || registrationForm.get('password').touched)">
+						This field is required.
+					</mat-error>
+				</mat-form-field>
+
+				<mat-form-field class="full-width">
+					<mat-icon matPrefix svgIcon="lock"></mat-icon>
+					<mat-label>Password (confirmation)</mat-label>
+					<input matInput type="password" placeholder="Password (confirmation)" formControlName="password-confirmation">
+
+					<mat-error *ngIf="registrationForm.get('password-confirmation').errors != null && registrationForm.get('password-confirmation').errors.hasOwnProperty('required') && (registrationForm.get('password-confirmation').dirty || registrationForm.get('password-confirmation').touched)">
+						This field is required.
+					</mat-error>
+
+					<mat-error *ngIf="registrationForm.get('password-confirmation').errors != null && registrationForm.get('password-confirmation').errors.hasOwnProperty('notEquivalent') && (registrationForm.get('password-confirmation').dirty || registrationForm.get('password-confirmation').touched)">
+						The passwords you have entered do not match.
+					</mat-error>
+				</mat-form-field>
+			</div>
+
+			<div>
+				<button mat-flat-button class="full-width sign-up-button" color="primary" (click)="register()">SIGN UP</button>
+			</div>
+		</form>
+
+		<app-alert [alertType]="'danger'" *ngIf="registerErrors.length > 0">
+			<div *ngFor="let message of registerErrors">
+				{{ message }}
+			</div>
+		</app-alert>
+
+		<app-alert [alertType]="'success'" *ngIf="registerSuccess.length > 0">
+			<div *ngFor="let message of registerSuccess">
+				{{ message }}
+			</div>
+
+			<hr />
+
+			<div><a routerLink="/login">Click here</a> to login to your account.</div>
+		</app-alert>
+	</div>
+</div>

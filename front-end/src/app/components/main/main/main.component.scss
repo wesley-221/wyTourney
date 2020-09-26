@@ -1,0 +1,10 @@
+.main-container {
+	display: flex;
+	flex-direction: column;
+
+	.navigation-bar {
+		display: flex;
+
+		margin-bottom: 16px;
+	}
+}

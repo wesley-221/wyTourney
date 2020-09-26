@@ -1,0 +1,32 @@
+@import 'variables';
+
+$nav-background-color: white;
+$nav-button-color: #171717e6;
+$nav-button-hover-color: #1717175c;
+
+:host {
+	width: 100vw;
+}
+
+.navigation-bar {
+	display: flex;
+
+	flex-direction: row;
+	align-items: center;
+	white-space: nowrap;
+
+	background-color: $nav-background-color;
+
+	padding: 0 128px;
+
+	font: 500 20px/32px $font-family;
+	letter-spacing: normal;
+
+	-webkit-box-shadow: 0px 1px 5px 0px rgba(0,0,0,0.75);
+	-moz-box-shadow: 0px 1px 5px 0px rgba(0,0,0,0.75);
+	box-shadow: 0px 1px 5px 0px rgba(0,0,0,0.75);
+
+	.spacer {
+		flex: 1 1 auto;
+	}
+}

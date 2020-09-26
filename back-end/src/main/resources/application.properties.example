@@ -1,0 +1,21 @@
+spring.jpa.hibernate.ddl-auto=update
+#spring.jpa.show-sql=true
+logging.level.root=info
+
+jwt.issuer=
+jwt.passphrase=
+
+server.port=8080
+server.ssl.key-store=/etc/letsencrypt/live/example.com/keystore.p12
+server.ssl.key-store-password=
+server.ssl.keyStoreType=PKCS12
+server.ssl.keyAlias=tomcat
+
+# The url to the database server, the name after the / is the database itself
+database.url=jdbc:mysql://127.0.0.1:3306/wytourney
+
+# The username of the database user
+database.username=root
+
+# The password of the database user
+database.password=

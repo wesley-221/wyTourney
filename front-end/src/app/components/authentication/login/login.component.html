@@ -1,0 +1,51 @@
+<div class="content">
+	<div class="login box-shadow">
+		<h2>Login</h2>
+
+		<form [formGroup]="loginForm">
+			<div>
+				<mat-form-field class="full-width">
+					<mat-icon matPrefix svgIcon="user"></mat-icon>
+					<mat-label>Username</mat-label>
+					<input matInput type="text" placeholder="Username" formControlName="username">
+
+					<mat-error *ngIf="loginForm.get('username').invalid && (loginForm.get('username').dirty || loginForm.get('username').touched)">
+						This field is required.
+					</mat-error>
+				</mat-form-field>
+
+				<mat-form-field class="full-width">
+					<mat-icon matPrefix svgIcon="lock"></mat-icon>
+					<mat-label>Password</mat-label>
+					<input matInput type="password" placeholder="Password" formControlName="password">
+
+					<mat-error *ngIf="loginForm.get('password').invalid && (loginForm.get('password').dirty || loginForm.get('password').touched)">
+						This field is required.
+					</mat-error>
+				</mat-form-field>
+			</div>
+
+			<div class="float-right forgot-password">
+				<a [routerLink]="['/forgot-password']">Forgot password?</a>
+			</div>
+
+			<div>
+				<button mat-flat-button class="full-width login-button" color="primary" (click)="login()">LOGIN</button>
+			</div>
+		</form>
+
+		<app-alert [alertType]="'danger'" *ngIf="loginErrors.length > 0">
+			<div *ngFor="let message of loginErrors">{{ message }}</div>
+		</app-alert>
+
+		<app-alert [alertType]="'success'" *ngIf="loginSuccess.length > 0">
+			<div *ngFor="let message of loginSuccess">{{ message }}</div>
+		</app-alert>
+
+		<div class="divider">
+			<span>Don't have an account yet?</span>
+		</div>
+
+		<a [routerLink]="['/sign-up']">Sign up</a>
+	</div>
+</div>

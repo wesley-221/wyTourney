@@ -1,0 +1,32 @@
+<div class="nav-item">
+	<div *ngIf="navItem.dropdown == true && canAccess(navItem)">
+		<button class="dropdown-button" [matMenuTriggerFor]="menu">
+			<span *ngIf="navItem.icon">
+				<mat-icon class="icon">{{ navItem.icon }}</mat-icon>
+			</span>
+
+			<span *ngIf="navItem.name">
+				{{ navItem.name }}
+			</span>
+		</button>
+
+		<mat-menu #menu="matMenu">
+			<div class="buttons" *ngFor="let menuItem of navItem.dropdownItems">
+				<button mat-menu-item *ngIf="menuItem.link" [routerLink]="menuItem.link">{{ menuItem.name }}</button>
+				<button mat-menu-item *ngIf="menuItem.execute" (click)="menuItem.execute()">{{ menuItem.name }}</button>
+			</div>
+		</mat-menu>
+	</div>
+
+	<div *ngIf="navItem.dropdown == false && canAccess(navItem)">
+		<button class="nav-button" [routerLink]="[navItem.link]" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: navItem.classExactMatch }">
+			<span *ngIf="navItem.icon">
+				<mat-icon>{{ navItem.icon }}</mat-icon>
+			</span>
+
+			<span *ngIf="navItem.name">
+				{{ navItem.name }}
+			</span>
+		</button>
+	</div>
+</div>

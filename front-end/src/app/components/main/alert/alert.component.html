@@ -1,0 +1,19 @@
+<div class="alert" [ngClass]="{
+	'alert-info': alertType == AlertTypes.Info,
+	'alert-success': alertType == AlertTypes.Success,
+	'alert-danger': alertType == AlertTypes.Danger,
+	'alert-warning': alertType == AlertTypes.Warning
+}">
+	<div class="icon-container">
+		<div class="icon">
+			<mat-icon class="mat-icon" svgIcon="info" *ngIf="alertType == AlertTypes.Info"></mat-icon>
+			<mat-icon class="mat-icon" *ngIf="alertType == AlertTypes.Success">check</mat-icon>
+			<mat-icon class="mat-icon" *ngIf="alertType == AlertTypes.Danger">close</mat-icon>
+			<mat-icon class="mat-icon" svgIcon="exclamation" *ngIf="alertType == AlertTypes.Warning"></mat-icon>
+		</div>
+	</div>
+
+	<div class="content">
+		<ng-content></ng-content>
+	</div>
+</div>

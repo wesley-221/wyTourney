@@ -1,0 +1,23 @@
+@import '~@angular/material/theming';
+@import 'variables';
+
+$typography: mat-typography-config(
+	$font-family
+);
+
+@include angular-material-typography($typography);
+
+$light-primary: mat-palette($md-info);
+$light-accent: mat-palette($md-accent);
+$light-warn: mat-palette($md-danger);
+
+$light-theme: mat-light-theme((
+	color: (
+		primary: $light-primary,
+		accent: $light-accent,
+		warn: $light-warn
+	)
+));
+
+@include mat-core($typography);
+@include angular-material-theme($light-theme);
