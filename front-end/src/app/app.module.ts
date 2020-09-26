@@ -10,7 +10,6 @@ import { MainComponent } from './components/main/main/main.component';
 import { NavigationBarComponent } from './components/main/navigation-bar/navigation-bar.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MaterialModule } from './material-module';
-import { ContactComponent } from './components/contact/contact.component';
 import { LoginComponent } from './components/authentication/login/login.component';
 import { HttpClientModule } from '@angular/common/http';
 import { SignUpComponent } from './components/authentication/sign-up/sign-up.component';
@@ -25,7 +24,6 @@ import { NavigationItemComponent } from './components/main/navigation-item/navig
 		ErrorComponent,
 		MainComponent,
 		NavigationBarComponent,
-		ContactComponent,
 		LoginComponent,
 		SignUpComponent,
 		AlertComponent,
