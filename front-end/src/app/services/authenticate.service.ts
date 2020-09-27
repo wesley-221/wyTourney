@@ -52,7 +52,12 @@ export class AuthenticateService {
 	 * Logout the user
 	 */
 	public logout(): void {
-		// TODO: logout
+		this.user = null;
+		this.isLoggedIn = null;
+		this.isAdmin = null;
+
+		this.cookieService.delete(this.OSU_ACCESS_TOKEN);
+		this.cookieService.delete(this.OSU_REFRESH_TOKEN);
 	}
 
 	/**
