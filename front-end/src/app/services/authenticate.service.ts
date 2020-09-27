@@ -30,8 +30,7 @@ export class AuthenticateService {
 				this.osuRefreshToken = refreshToken;
 			}
 
-			// TODO: add type for this
-			osuService.getMeData().subscribe((result: any) => {
+			osuService.getMeData().subscribe(result => {
 				const newUser = new User({
 					id: result.id,
 					username: result.username,
@@ -87,8 +86,8 @@ export class AuthenticateService {
 	 * @param refreshToken the refresh token
 	 */
 	public setOsuOauthToken(accessToken: string, refreshToken: string): void {
-		this.setCookie('osu_oauth_access_token', accessToken);
-		this.setCookie('osu_oauth_refresh_token', refreshToken);
+		this.setCookie(this.OSU_ACCESS_TOKEN, accessToken);
+		this.setCookie(this.OSU_REFRESH_TOKEN, refreshToken);
 	}
 
 	/**

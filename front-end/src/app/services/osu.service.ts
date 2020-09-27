@@ -13,9 +13,8 @@ export class OsuService {
 
 	/**
 	 * Get /me data from osu! api
-	 * TODO: type for this
 	 */
-	public getMeData(): Observable<any> {
-		return this.httpClient.get<any>(`${this.apiUrl}osu/me`);
+	public getMeData(): Observable<OsuMeEndPointResponse> {
+		return this.httpClient.get<OsuMeEndPointResponse>(`${this.apiUrl}osu/me`);
 	}
 }
