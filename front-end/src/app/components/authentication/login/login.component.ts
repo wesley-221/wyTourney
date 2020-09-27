@@ -20,7 +20,7 @@ export class LoginComponent implements OnInit {
 		route.queryParams.subscribe((token: { code: string }) => {
 			// User was redirected from osu oauth
 			if (token.code !== undefined) {
-				this.httpClient.post<any>(`${environment.apiUrl}request-osu-token`, token.code).subscribe(response => {
+				this.httpClient.post<OsuAuthenticateResponse>(`${environment.apiUrl}osu-authenticate`, token.code).subscribe(response => {
 					this.authenticateService.setOsuOauthToken(response.access_token, response.refresh_token);
 
 					this.router.navigate(['/login', 'success']);

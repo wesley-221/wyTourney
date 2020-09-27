@@ -23,7 +23,7 @@ public class AuthenticateController {
     @Value("${osu.oauth.redirect_uri}")
     private String oauthRedirectUri;
 
-    @PostMapping("/request-osu-token")
+    @PostMapping("/osu-authenticate")
     public ResponseEntity<Object> requestOsuToken(@RequestBody String osuOauthToken) {
         final String OSU_OAUTH_URL = "https://osu.ppy.sh/oauth/token";
 
