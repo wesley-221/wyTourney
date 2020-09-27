@@ -1,30 +1,88 @@
+@import 'variables';
+
 .content {
 	display: flex;
 	justify-content: center;
 
+	$sidebar-logo-width: 150px;
+
 	.login {
 		display: flex;
 		flex-direction: column;
-		justify-content: center;
-		text-align: center;
+		justify-content: space-between;
 
 		border: 1px solid #e6e6e6;
 
-		max-width: 350px;
+		width: 400px;
 
-		padding: 32px;
+		padding: 18px;
+		margin: 18px;
 
-		.float-right {
+		.header {
 			display: flex;
-			justify-content: flex-end;
+			justify-content: center;
+			align-items: center;
+
+			flex-direction: column;
+
+			.header-image {
+				width: $sidebar-logo-width;
+				height: $sidebar-logo-width;
+				line-height: $sidebar-logo-width;
+
+				margin-bottom: 8px;
+				border-radius: 50%;
+
+				-webkit-box-shadow: 0px 0px 15px 0px rgba(0,0,0,0.75);
+					-moz-box-shadow: 0px 0px 15px 0px rgba(0,0,0,0.75);
+					box-shadow: 0px 0px 15px 0px rgba(0,0,0,0.75);
+
+				&.osu-logo {
+					background-repeat: no-repeat;
+					background-size: cover;
+
+					background-image: url("/assets/images/osulogo.png");
+				}
+			}
+
+			.title {
+				font-size: 24px;
+				padding: 32px 8px 32px 8px;
+
+				text-align: center;
+
+				.rank {
+					font-size: 14px;
+				}
+			}
+
+			.authentication-message {
+				display: flex;
+
+				background-color: $success;
+				border: 1px solid darken($success, 10%);
+
+				padding: 8px 32px 8px 32px;
+				margin: 8px 0px 8px 0px;
+
+				.spinner-container {
+					display: flex;
+					align-items: center;
+
+					margin-right: 8px;
+				}
+
+				.text {
+					display: flex;
+					align-items: center;
+				}
+			}
 		}
 
-		.forgot-password {
-			padding-bottom: 16px;
-		}
-
-		.login-button {
-			border-radius: 25px;
+		.body {
+			.login-button {
+				border-radius: 25px;
+			}
 		}
 	}
 }

@@ -11,11 +11,11 @@ import { NavigationBarComponent } from './components/main/navigation-bar/navigat
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MaterialModule } from './material-module';
 import { LoginComponent } from './components/authentication/login/login.component';
-import { HttpClientModule } from '@angular/common/http';
-import { SignUpComponent } from './components/authentication/sign-up/sign-up.component';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AlertComponent } from './components/main/alert/alert.component';
 import { AuthenticateService } from './services/authenticate.service';
 import { NavigationItemComponent } from './components/main/navigation-item/navigation-item.component';
+import { TokenInterceptor } from './guards/token.interceptor';
 
 @NgModule({
 	declarations: [
@@ -25,7 +25,6 @@ import { NavigationItemComponent } from './components/main/navigation-item/navig
 		MainComponent,
 		NavigationBarComponent,
 		LoginComponent,
-		SignUpComponent,
 		AlertComponent,
 		NavigationItemComponent
 	],
@@ -38,7 +37,9 @@ import { NavigationItemComponent } from './components/main/navigation-item/navig
 		FormsModule,
 		ReactiveFormsModule
 	],
-	providers: [],
+	providers: [
+		{ provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true }
+	],
 	bootstrap: [AppComponent]
 })
 export class AppModule {

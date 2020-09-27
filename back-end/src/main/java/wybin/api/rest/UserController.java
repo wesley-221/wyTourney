@@ -14,70 +14,67 @@ import java.util.ArrayList;
 
 @RestController
 public class UserController {
-	@Autowired
-	UserRepository userRepository;
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    @Autowired
+    UserRepository userRepository;
 
-	private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    @GetMapping("/users")
+    public ResponseEntity<ArrayList<User>> getAllusers() {
+        ArrayList<User> userArrayList = (ArrayList<User>) userRepository.findAll();
 
-	@GetMapping("/users")
-	public ResponseEntity<ArrayList<User>> getAllusers() {
-		ArrayList<User> userArrayList = (ArrayList<User>) userRepository.findAll();
+        // Remove password, no need for the end user to know :)
+        for (User user : userArrayList) {
+            user.setPassword(null);
+        }
 
-		// Remove password, no need for the end user to know :)
-		for(User user : userArrayList) {
-			user.setPassword(null);
-		}
+        return ResponseEntity.ok().body(userArrayList);
+    }
 
-		return ResponseEntity.ok().body(userArrayList);
-	}
+    @GetMapping("/users/{id}")
+    public ResponseEntity<User> getUser(@PathVariable Long id) {
+        User user = userRepository.findById(id);
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().build().toUri();
 
-	@GetMapping("/users/{id}")
-	public ResponseEntity<User> getUser(@PathVariable Long id) {
-		User user = userRepository.findById(id);
-		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().build().toUri();
+        if (user == null) {
+            return ResponseEntity.notFound().location(uri).build();
+        }
 
-		if(user == null) {
-			return ResponseEntity.notFound().location(uri).build();
-		}
+        // Remove password, no need for the end user to know
+        user.setPassword(null);
 
-		// Remove password, no need for the end user to know
-		user.setPassword(null);
+        return ResponseEntity.ok().location(uri).body(user);
+    }
 
-		return ResponseEntity.ok().location(uri).body(user);
-	}
+    @PostMapping("/users")
+    public ResponseEntity<Object> updateUser(@RequestBody User user) {
+        User getUser = userRepository.findById(user.getId());
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().build().toUri();
 
-	@PostMapping("/users")
-	public ResponseEntity<Object> updateUser(@RequestBody User user) {
-		User getUser = userRepository.findById(user.getId());
-		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().build().toUri();
+        // Check if the user exists
+        if (getUser == null) {
+            return ResponseEntity.notFound().location(uri).build();
+        }
 
-		// Check if the user exists
-		if(getUser == null) {
-			return ResponseEntity.notFound().location(uri).build();
-		}
+        // Check if the new username exists
+        if (!user.getUsername().equals(getUser.getUsername()) && userRepository.existsByUsername(user.getUsername())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).location(uri).body("{\"message\": \"The username \\\"" + user.getUsername() + "\\\" is already in use.\"}");
+        }
 
+        getUser.setUsername(user.getUsername());
 
+        // Check if the password has to be changed
+        if (user.getPassword() != null && !user.getPassword().equals("")) {
+            if (!user.getPassword().equals(user.getPasswordConfirm())) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).location(uri).body("{\"message\": \"The passwords you have entered do not match.\"}");
+            }
 
-		// Check if the new username exists
-		if(!user.getUsername().equals(getUser.getUsername()) && userRepository.existsByUsername(user.getUsername())) {
-			return ResponseEntity.status(HttpStatus.CONFLICT).location(uri).body("{\"message\": \"The username \\\"" + user.getUsername() + "\\\" is already in use.\"}");
-		}
+            getUser.setPassword(passwordEncoder.encode(user.getPassword()));
+        }
 
-		getUser.setUsername(user.getUsername());
+        getUser.setAdmin(user.isAdmin());
 
-		// Check if the password has to be changed
-		if(user.getPassword() != null && !user.getPassword().equals("")) {
-			if(!user.getPassword().equals(user.getPasswordConfirm())) {
-				return ResponseEntity.status(HttpStatus.CONFLICT).location(uri).body("{\"message\": \"The passwords you have entered do not match.\"}");
-			}
+        userRepository.save(getUser);
 
-			getUser.setPassword(passwordEncoder.encode(user.getPassword()));
-		}
-
-		getUser.setAdmin(user.isAdmin());
-
-		userRepository.save(getUser);
-
-		return ResponseEntity.ok().location(uri).body(getUser);
-	}
+        return ResponseEntity.ok().location(uri).body(getUser);
+    }
 }

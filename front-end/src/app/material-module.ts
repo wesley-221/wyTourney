@@ -7,6 +7,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 const modules: any[] = [
 	MatButtonModule,
@@ -14,7 +15,8 @@ const modules: any[] = [
 	MatIconModule,
 	MatFormFieldModule,
 	MatInputModule,
-	MatMenuModule
+	MatMenuModule,
+	MatProgressSpinnerModule
 ];
 
 @NgModule({

@@ -1,8 +1,8 @@
-import { HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { AbstractControl, FormControl, FormGroup, Validators } from '@angular/forms';
-import { User } from 'src/app/models/user';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AuthenticateService } from 'src/app/services/authenticate.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
 	selector: 'app-login',
@@ -10,49 +10,32 @@ import { AuthenticateService } from 'src/app/services/authenticate.service';
 	styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit {
-	loginForm: FormGroup;
+	hasBeenAuthenticated = false;
 
-	loginErrors: string[] = [];
-	loginSuccess: string[] = [];
+	constructor(
+		public authenticateService: AuthenticateService,
+		private route: ActivatedRoute,
+		private httpClient: HttpClient,
+		private router: Router) {
+		route.queryParams.subscribe((token: { code: string }) => {
+			// User was redirected from osu oauth
+			if (token.code !== undefined) {
+				this.httpClient.post<any>(`${environment.apiUrl}request-osu-token`, token.code).subscribe(response => {
+					this.authenticateService.setOsuOauthToken(response.access_token, response.refresh_token);
 
-	constructor(private authenticateService: AuthenticateService) {
-		this.loginForm = new FormGroup({
-			username: new FormControl('', [
-				Validators.required
-			]),
-			password: new FormControl('', [
-				Validators.required
-			])
+					this.router.navigate(['/login', 'success']);
+				}, (err: HttpErrorResponse) => {
+					console.log(err);
+				});
+			}
+		});
+
+		route.params.subscribe((params) => {
+			if (Object.keys(params).length > 0) {
+				this.hasBeenAuthenticated = true;
+			}
 		});
 	}
 
 	ngOnInit(): void { }
-
-	login(): void {
-		if (this.loginForm.valid) {
-			const username: AbstractControl = this.loginForm.get('username');
-			const password: AbstractControl = this.loginForm.get('password');
-
-			const user = new User();
-
-			user.username = username.value;
-			user.password = password.value;
-
-			this.authenticateService.loginAccount(user).subscribe((result) => {
-				this.loginErrors = [];
-				this.loginSuccess = [];
-
-				this.authenticateService.setCookie(this.authenticateService.cookieName, result.token);
-				this.loginSuccess.push(result.message);
-			}, (err: HttpErrorResponse) => {
-				this.loginErrors = [];
-				this.loginSuccess = [];
-
-				this.loginErrors.push(err.error.message);
-			});
-		}
-		else {
-			this.loginForm.markAllAsTouched();
-		}
-	}
 }

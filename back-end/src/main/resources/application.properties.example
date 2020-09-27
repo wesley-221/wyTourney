@@ -19,3 +19,9 @@ database.username=root
 
 # The password of the database user
 database.password=
+
+# osu! oauth configurations
+# Used to authenticate an account through osu!
+osu.ouath.client_id=
+osu.oauth.client_secret=
+osu.oauth.redirect_uri=

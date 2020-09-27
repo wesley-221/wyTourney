@@ -1,64 +1,94 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { CookieService } from 'ngx-cookie-service';
-import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { User } from '../models/user';
-import * as jwtDecode from 'jwt-decode';
+import { OsuService } from './osu.service';
 
 @Injectable({
 	providedIn: 'root'
 })
 export class AuthenticateService {
 	private readonly apiUrl: string = environment.apiUrl;
-	public readonly cookieName: string = 'auth';
+	public readonly OSU_ACCESS_TOKEN = 'osu_oauth_access_token';
+	public readonly OSU_REFRESH_TOKEN = 'osu_oauth_refresh_token';
+
 	public user: User = null;
 	public isLoggedIn = false;
 	public isAdmin = false;
+	public osuAccessToken: string;
+	public osuRefreshToken: string;
 
-	constructor(private httpClient: HttpClient, private cookieService: CookieService) {
-		const authCookie: string = this.getCookie(this.cookieName);
+	constructor(private cookieService: CookieService, private osuService: OsuService) {
+		const accessToken: string = this.getCookie(this.OSU_ACCESS_TOKEN);
+		const refreshToken: string = this.getCookie(this.OSU_REFRESH_TOKEN);
 
-		if (authCookie !== '') {
-			const loggedInUser: User = new User();
-			const cookieValue = jwtDecode(authCookie);
+		if (accessToken !== '') {
+			this.osuAccessToken = accessToken;
 
-			loggedInUser.id = cookieValue.id;
-			loggedInUser.username = cookieValue.username;
-			loggedInUser.admin = cookieValue.admin;
-			loggedInUser.token = cookieValue;
+			if (this.osuRefreshToken !== '') {
+				this.osuRefreshToken = refreshToken;
+			}
 
-			this.user = loggedInUser;
-			this.isLoggedIn = true;
-			this.isAdmin = cookieValue.admin;
+			// TODO: add type for this
+			osuService.getMeData().subscribe((result: any) => {
+				const newUser = new User({
+					id: result.id,
+					username: result.username,
+					avatarUrl: result.avatar_url,
+					coverUrl: result.cover_url,
+					pp: result.pp,
+					rank: result.rank,
+					countryCode: result.flag
+				});
+
+				this.user = newUser;
+
+				this.isLoggedIn = true;
+			});
 		}
-	}
-
-	/**
-	 * Endpoint to register an account
-	 * @param user the user to register
-	 */
-	public registerNewAccount(user: User): Observable<any> {
-		return this.httpClient.post<User>(`${this.apiUrl}register`, user);
-	}
-
-	/**
-	 * Endpoint to login an account
-	 * @param user the user to login
-	 */
-	public loginAccount(user: User): Observable<any> {
-		return this.httpClient.post<User>(`${this.apiUrl}login`, user);
 	}
 
 	/**
 	 * Logout the user
 	 */
 	public logout(): void {
-		this.user = null;
-		this.isLoggedIn = false;
-		this.isAdmin = false;
+		// TODO: logout
+	}
 
-		this.cookieService.delete(this.cookieName);
+	/**
+	 * Get the authorization url
+	 * @returns authorization url
+	 */
+	public getOsuOauthUrl(): string {
+		const parameters = [
+			{ parameterName: 'client_id', value: environment.osu.client_id },
+			{ parameterName: 'redirect_uri', value: environment.osu.redirect_uri },
+			{ parameterName: 'response_type', value: 'code' },
+			{ parameterName: 'scope', value: 'identify' }
+		];
+
+		let finalLink = 'https://osu.ppy.sh/oauth/authorize?';
+
+		if (parameters != null) {
+			parameters.forEach(parameter => {
+				finalLink += `${parameter.parameterName}=${parameter.value}&`;
+			});
+
+			finalLink = finalLink.substring(0, finalLink.length - 1);
+		}
+
+		return finalLink;
+	}
+
+	/**
+	 * Set the cookies with the osu oauth tokens
+	 * @param accessToken the access token
+	 * @param refreshToken the refresh token
+	 */
+	public setOsuOauthToken(accessToken: string, refreshToken: string): void {
+		this.setCookie('osu_oauth_access_token', accessToken);
+		this.setCookie('osu_oauth_refresh_token', refreshToken);
 	}
 
 	/**

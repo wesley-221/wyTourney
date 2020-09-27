@@ -1,87 +1,51 @@
 package wybin.api.rest;
 
-import com.fasterxml.jackson.annotation.JsonView;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import wybin.api.models.JsonViews;
-import wybin.api.models.authentication.JWToken;
-import wybin.api.models.authentication.User;
-import wybin.api.repositories.UserRepository;
-
-import java.util.HashMap;
+import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.WebClient;
+import wybin.api.models.authentication.OsuOauthHelper;
 
 @RestController
 public class AuthenticateController {
-	@Autowired
-	UserRepository userRepository;
+    @Value("${osu.oauth.client_id}")
+    private String oauthClientId;
 
-	private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    @Value("${osu.oauth.client_secret}")
+    private String oauthClientSecret;
 
-	@Value("${jwt.issuer}")
-	private String issuer;
+    @Value("${osu.oauth.redirect_uri}")
+    private String oauthRedirectUri;
 
-	@Value("${jwt.passphrase}")
-	private String passphrase;
+    @PostMapping("/request-osu-token")
+    public ResponseEntity<Object> requestOsuToken(@RequestBody String osuOauthToken) {
+        final String OSU_OAUTH_URL = "https://osu.ppy.sh/oauth/token";
 
-	@PostMapping("/register")
-	@JsonView(JsonViews.ShowUser.class)
-	public ResponseEntity<Object> register(@RequestBody User user) {
-		HashMap<String, Object> message = new HashMap<>();
+        MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
 
-		if(userRepository.existsByUsername(user.getUsername())) {
-			message.put("message", "The username " + user.getUsername() + " is already in use.");
-			message.put("username", user.getUsername());
+        requestBody.add("client_id", this.oauthClientId);
+        requestBody.add("client_secret", this.oauthClientSecret);
+        requestBody.add("code", osuOauthToken);
+        requestBody.add("grant_type", "authorization_code");
+        requestBody.add("redirect_uri", this.oauthRedirectUri);
 
-			return ResponseEntity.status(HttpStatus.CONFLICT).body(message);
-		}
+        var requestToken = WebClient
+                .create(OSU_OAUTH_URL)
+                .post()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromMultipartData(requestBody))
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .bodyToFlux(OsuOauthHelper.class)
+                .onErrorMap(e -> e)
+                .blockLast();
 
-		if(!user.getPassword().equals(user.getPasswordConfirm())) {
-			message.put("message", "The passwords you have entered do not match.");
-
-			return ResponseEntity.status(HttpStatus.CONFLICT).body(message);
-		}
-
-		user.setPassword(passwordEncoder.encode(user.getPassword()));
-		userRepository.save(user);
-
-		message.put("message", "Successfully registered your account with the username " + user.getUsername() + ".");
-		message.put("user", user);
-
-		return ResponseEntity.status(HttpStatus.CREATED).body(message);
-	}
-
-	@PostMapping("/login")
-	@JsonView(JsonViews.ShowUser.class)
-	public ResponseEntity<Object> login(@RequestBody User user) {
-		User findUser = userRepository.findByUsername(user.getUsername());
-		HashMap<String, Object> message = new HashMap<>();
-
-		// Check if the user exists
-		if(findUser == null) {
-			message.put("message", "Invalid username or password given.");
-			return ResponseEntity.status(HttpStatus.CONFLICT).body(message);
-		}
-
-		// Check if the correct password is given
-		if(!passwordEncoder.matches(user.getPassword(), findUser.getPassword())) {
-			message.put("message", "Invalid username or password given.");
-			return ResponseEntity.status(HttpStatus.CONFLICT).body(message);
-		}
-
-		JWToken jwToken = new JWToken(findUser.getId(), findUser.getUsername(), findUser.isAdmin());
-		String token = jwToken.encode(this.issuer, this.passphrase);
-
-		message.put("message", "Successfully logged in.");
-		message.put("user", findUser);
-		message.put("token", token);
-
-		return new ResponseEntity<>(message, HttpStatus.OK);
-	}
+        return ResponseEntity.ok(requestToken);
+    }
 }
