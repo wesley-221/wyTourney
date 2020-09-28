@@ -16,12 +16,21 @@ export class TokenInterceptor implements HttpInterceptor {
 
 	intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
 		if (request.url.includes(environment.apiUrl)) {
-			const token: string = this.cookieService.get('osu_oauth_access_token');
+			const osuOauthAccessToken: string = this.cookieService.get('osu_oauth_access_token');
+			const token: string = this.cookieService.get('wy_tourney_token');
+
+			if (osuOauthAccessToken) {
+				request = request.clone({
+					setHeaders: {
+						OsuAuthorization: `Bearer ${osuOauthAccessToken}`
+					}, withCredentials: true
+				});
+			}
 
 			if (token) {
 				request = request.clone({
 					setHeaders: {
-						Authorization: `Bearer ${token}`
+						Authorization: token
 					}, withCredentials: true
 				});
 			}

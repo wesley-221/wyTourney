@@ -1,14 +1,14 @@
-package wybin.api.models;
+package wybin.api.models.helpers;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.LinkedHashMap;
 
 public class MeHelper {
-    private Integer id;
+    private Long id;
     private String username;
     private String cover_url;
-    private Double pp;
+    private Integer pp;
     private Integer rank;
     private String avatar_url;
     private String flag;
@@ -18,7 +18,7 @@ public class MeHelper {
 
     @JsonProperty("statistics")
     private void unpackStatistics(LinkedHashMap<Object, Object> statistics) {
-        pp = Double.parseDouble(statistics.get("pp").toString());
+        pp = (Integer) statistics.get("pp");
         rank = (Integer) statistics.get("pp_rank");
     }
 
@@ -27,11 +27,11 @@ public class MeHelper {
         flag = (String) country.get("code");
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -51,11 +51,11 @@ public class MeHelper {
         this.cover_url = cover_url;
     }
 
-    public Double getPp() {
+    public Integer getPp() {
         return pp;
     }
 
-    public void setPp(Double pp) {
+    public void setPp(Integer pp) {
         this.pp = pp;
     }
 

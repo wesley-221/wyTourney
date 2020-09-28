@@ -18,12 +18,6 @@ export class NavigationItemComponent implements OnInit {
 	 * @param navItem the navigation item to get access to
 	 */
 	canAccess(navItem: NavigationItem): boolean {
-		if (navItem.hasToBeAdmin === true) {
-			if (this.authenticateService.isAdmin === false) {
-				return false;
-			}
-		}
-
 		if (navItem.hasToBeLoggedIn === true) {
 			if (this.authenticateService.isLoggedIn === false) {
 				return false;

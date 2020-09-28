@@ -1,67 +1,119 @@
 package wybin.api.models.authentication;
 
-import com.fasterxml.jackson.annotation.JsonView;
-import wybin.api.models.JsonViews;
+import wybin.api.models.helpers.MeHelper;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import java.util.Date;
 
 @Entity
 public class User {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@JsonView(JsonViews.ShowUser.class)
-	private Long id;
+    @Id
+    private Long id;
+    private String username;
+    private String avatarUrl;
+    private String coverUrl;
+    private String countryCode;
+    private Integer pp;
+    private Integer rank;
+    private Date lastUpdate;
+    private Integer role;
 
-	@JsonView(JsonViews.ShowUser.class)
-	private String username;
-	private String password;
+    public User() {
+    }
 
-	@Transient
-	private String passwordConfirm;
+    public User(Long id, String username, String avatarUrl, String coverUrl, String countryCode, Integer pp, Integer rank, Date lastUpdate, Integer role) {
+        this.id = id;
+        this.username = username;
+        this.avatarUrl = avatarUrl;
+        this.coverUrl = coverUrl;
+        this.countryCode = countryCode;
+        this.pp = pp;
+        this.rank = rank;
+        this.lastUpdate = lastUpdate;
+        this.role = role;
+    }
 
-	@JsonView(JsonViews.ShowUser.class)
-	private boolean isAdmin;
+    public Long getId() {
+        return id;
+    }
 
-	public User() {
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public Long getId() {
-		return id;
-	}
+    public String getUsername() {
+        return username;
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
-	public String getUsername() {
-		return username;
-	}
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
 
-	public void setUsername(String username) {
-		this.username = username;
-	}
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
+    }
 
-	public String getPassword() {
-		return password;
-	}
+    public String getCoverUrl() {
+        return coverUrl;
+    }
 
-	public void setPassword(String password) {
-		this.password = password;
-	}
+    public void setCoverUrl(String coverUrl) {
+        this.coverUrl = coverUrl;
+    }
 
-	public String getPasswordConfirm() {
-		return passwordConfirm;
-	}
+    public String getCountryCode() {
+        return countryCode;
+    }
 
-	public void setPasswordConfirm(String passwordConfirm) {
-		this.passwordConfirm = passwordConfirm;
-	}
+    public void setCountryCode(String countryCode) {
+        this.countryCode = countryCode;
+    }
 
-	public boolean isAdmin() {
-		return isAdmin;
-	}
+    public Integer getPp() {
+        return pp;
+    }
 
-	public void setAdmin(boolean admin) {
-		isAdmin = admin;
-	}
+    public void setPp(Integer pp) {
+        this.pp = pp;
+    }
+
+    public Integer getRank() {
+        return rank;
+    }
+
+    public void setRank(Integer rank) {
+        this.rank = rank;
+    }
+
+    public Date getLastUpdate() {
+        return lastUpdate;
+    }
+
+    public void setLastUpdate(Date lastUpdate) {
+        this.lastUpdate = lastUpdate;
+    }
+
+    public Integer getRole() {
+        return role;
+    }
+
+    public void setRole(Integer role) {
+        this.role = role;
+    }
+
+    public void updateFromMeHelper(MeHelper meHelper) {
+        this.id = meHelper.getId();
+        this.username = meHelper.getUsername();
+        this.avatarUrl = meHelper.getAvatar_url();
+        this.coverUrl = meHelper.getCover_url();
+        this.pp = meHelper.getPp();
+        this.rank = meHelper.getRank();
+        this.countryCode = meHelper.getFlag();
+        this.lastUpdate = new Date();
+    }
 }

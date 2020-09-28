@@ -16,6 +16,7 @@ import { AlertComponent } from './components/main/alert/alert.component';
 import { AuthenticateService } from './services/authenticate.service';
 import { NavigationItemComponent } from './components/main/navigation-item/navigation-item.component';
 import { TokenInterceptor } from './guards/token.interceptor';
+import { ProfileComponent } from './components/authentication/profile/profile.component';
 
 @NgModule({
 	declarations: [
@@ -26,7 +27,8 @@ import { TokenInterceptor } from './guards/token.interceptor';
 		NavigationBarComponent,
 		LoginComponent,
 		AlertComponent,
-		NavigationItemComponent
+		NavigationItemComponent,
+		ProfileComponent
 	],
 	imports: [
 		BrowserModule,

@@ -13,11 +13,13 @@ export class NavigationBarComponent implements OnInit {
 	];
 
 	rightSideNavigation: NavigationItem[] = [
-		new NavigationItem({ link: '/login', name: 'login', showWhenLoggedIn: false }),
-		new NavigationItem({ link: '/contact', name: 'contact' }),
-		new NavigationItem({ icon: 'settings', hasToBeLoggedIn: true, showWhenLoggedIn: true, dropdown: true, dropdownItems: [
-			new NavigationItem({ name: 'logout', execute: () => this.authenticateService.logout() })
-		]})
+		new NavigationItem({ link: 'login', name: 'login', showWhenLoggedIn: false }),
+		new NavigationItem({ link: 'profile', name: 'profile', hasToBeLoggedIn: true, showWhenLoggedIn: true }),
+		new NavigationItem({
+			icon: 'settings', hasToBeLoggedIn: true, showWhenLoggedIn: true, dropdown: true, dropdownItems: [
+				new NavigationItem({ name: 'logout', execute: () => this.authenticateService.logout() })
+			]
+		})
 	];
 
 	constructor(public authenticateService: AuthenticateService) { }

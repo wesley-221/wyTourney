@@ -1,80 +1,53 @@
 package wybin.api.rest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import wybin.api.models.authentication.JWToken;
 import wybin.api.models.authentication.User;
+import wybin.api.models.helpers.MeHelper;
 import wybin.api.repositories.UserRepository;
 
 import java.net.URI;
-import java.util.ArrayList;
 
 @RestController
 public class UserController {
-    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     @Autowired
     UserRepository userRepository;
 
-    @GetMapping("/users")
-    public ResponseEntity<ArrayList<User>> getAllusers() {
-        ArrayList<User> userArrayList = (ArrayList<User>) userRepository.findAll();
+    @Value("${jwt.passphrase}")
+    private String passphrase;
 
-        // Remove password, no need for the end user to know :)
-        for (User user : userArrayList) {
-            user.setPassword(null);
+    @GetMapping("/user")
+    public ResponseEntity<Object> getAllusers(@RequestHeader(value = "Authorization", required = false) String token, @RequestHeader(value = "OsuAuthorization", required = false) String osuToken) {
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().build().toUri();
+
+        if (token == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).location(uri).body("No token provided.");
         }
 
-        return ResponseEntity.ok().body(userArrayList);
-    }
+        JWToken jwToken = JWToken.decode(token, passphrase);
 
-    @GetMapping("/users/{id}")
-    public ResponseEntity<User> getUser(@PathVariable Long id) {
-        User user = userRepository.findById(id);
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().build().toUri();
+        if (jwToken == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).location(uri).body("Invalid token provided.");
+        }
+
+        User user = userRepository.findById(jwToken.getUserId());
 
         if (user == null) {
             return ResponseEntity.notFound().location(uri).build();
         }
 
-        // Remove password, no need for the end user to know
-        user.setPassword(null);
+        MeHelper meHelper = (MeHelper) OsuController.getOsuApiData("me", MeHelper.class, osuToken);
+        user.updateFromMeHelper(meHelper);
 
-        return ResponseEntity.ok().location(uri).body(user);
-    }
+        userRepository.save(user);
 
-    @PostMapping("/users")
-    public ResponseEntity<Object> updateUser(@RequestBody User user) {
-        User getUser = userRepository.findById(user.getId());
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().build().toUri();
-
-        // Check if the user exists
-        if (getUser == null) {
-            return ResponseEntity.notFound().location(uri).build();
-        }
-
-        // Check if the new username exists
-        if (!user.getUsername().equals(getUser.getUsername()) && userRepository.existsByUsername(user.getUsername())) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).location(uri).body("{\"message\": \"The username \\\"" + user.getUsername() + "\\\" is already in use.\"}");
-        }
-
-        getUser.setUsername(user.getUsername());
-
-        // Check if the password has to be changed
-        if (user.getPassword() != null && !user.getPassword().equals("")) {
-            if (!user.getPassword().equals(user.getPasswordConfirm())) {
-                return ResponseEntity.status(HttpStatus.CONFLICT).location(uri).body("{\"message\": \"The passwords you have entered do not match.\"}");
-            }
-
-            getUser.setPassword(passwordEncoder.encode(user.getPassword()));
-        }
-
-        getUser.setAdmin(user.isAdmin());
-
-        userRepository.save(getUser);
-
-        return ResponseEntity.ok().location(uri).body(getUser);
+        return ResponseEntity.ok().body(user);
     }
 }

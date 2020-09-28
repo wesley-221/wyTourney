@@ -1,37 +1,39 @@
 package wybin.api.models.authentication;
 
 public class AuthRoute {
-	private String url;
-	private boolean requiresAdmin;
-	private RequestType requestType;
+    private String url;
+    private boolean requiresAdmin;
+    private RequestType requestType;
 
-	public AuthRoute(String url, boolean requiresAdmin, RequestType requestType) {
-		this.url = url;
-		this.requiresAdmin = requiresAdmin;
-		this.requestType = requestType;
-	}
+    // TODO: Implement new Role enum permission to
 
-	public String getUrl() {
-		return url;
-	}
+    public AuthRoute(String url, boolean requiresAdmin, RequestType requestType) {
+        this.url = url;
+        this.requiresAdmin = requiresAdmin;
+        this.requestType = requestType;
+    }
 
-	public void setUrl(String url) {
-		this.url = url;
-	}
+    public String getUrl() {
+        return url;
+    }
 
-	public boolean isRequiresAdmin() {
-		return requiresAdmin;
-	}
+    public void setUrl(String url) {
+        this.url = url;
+    }
 
-	public void setRequiresAdmin(boolean requiresAdmin) {
-		this.requiresAdmin = requiresAdmin;
-	}
+    public boolean isRequiresAdmin() {
+        return requiresAdmin;
+    }
 
-	public RequestType getRequestType() {
-		return requestType;
-	}
+    public void setRequiresAdmin(boolean requiresAdmin) {
+        this.requiresAdmin = requiresAdmin;
+    }
 
-	public void setRequestType(RequestType requestType) {
-		this.requestType = requestType;
-	}
+    public RequestType getRequestType() {
+        return requestType;
+    }
+
+    public void setRequestType(RequestType requestType) {
+        this.requestType = requestType;
+    }
 }

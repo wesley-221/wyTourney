@@ -6,6 +6,8 @@ export class User {
 	pp: number;
 	rank: number;
 	countryCode: string;
+	lastUpdate: Date;
+	role: number;
 
 	constructor(init?: Partial<User>) {
 		Object.assign(this, init);

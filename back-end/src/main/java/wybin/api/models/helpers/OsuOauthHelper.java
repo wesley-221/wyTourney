@@ -1,4 +1,4 @@
-package wybin.api.models.authentication;
+package wybin.api.models.helpers;
 
 public class OsuOauthHelper {
     private String token_type;

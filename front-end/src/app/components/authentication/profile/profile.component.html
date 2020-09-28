@@ -1,0 +1,19 @@
+<div class="content">
+	<div class="login box-shadow" *ngIf="authenticateService.isLoggedIn == true">
+		<div class="header">
+			<img class="header-image" [src]="authenticateService.user.avatarUrl" />
+
+			<div class="title">
+				Logged in as {{ authenticateService.user.username }}
+
+				<div class="rank">
+					<img [src]="authenticateService.user.getFlagLink()" /> #{{ authenticateService.user.rank }} ({{ authenticateService.user.pp }} pp)
+				</div>
+			</div>
+		</div>
+
+		<div class="body">
+			<button mat-raised-button class="full-width login-button" color="warn" (click)="authenticateService.logout()">Logout</button>
+		</div>
+	</div>
+</div>

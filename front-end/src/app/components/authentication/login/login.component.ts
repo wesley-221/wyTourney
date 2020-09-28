@@ -20,13 +20,17 @@ export class LoginComponent implements OnInit {
 		route.queryParams.subscribe((token: { code: string }) => {
 			// User was redirected from osu oauth
 			if (token.code !== undefined) {
-				this.httpClient.post<OsuAuthenticateResponse>(`${environment.apiUrl}osu-authenticate`, token.code).subscribe(response => {
-					this.authenticateService.setOsuOauthToken(response.access_token, response.refresh_token);
+				this.httpClient.post<OsuAuthenticateResponse>(`${environment.apiUrl}osu-authenticate`, token.code,
+					{ observe: 'response' }).subscribe(response => {
+						this.authenticateService.setOsuOauthToken(response.body.osuOauthHelper.access_token, response.body.osuOauthHelper.refresh_token);
+						this.authenticateService.setCookie(this.authenticateService.WY_TOURNEY_TOKEN, response.headers.get('Authorization'));
 
-					this.router.navigate(['/login', 'success']);
-				}, (err: HttpErrorResponse) => {
-					console.log(err);
-				});
+						authenticateService.getAuthenticatedUser();
+
+						this.router.navigate(['profile']);
+					}, (err: HttpErrorResponse) => {
+						console.log(err);
+					});
 			}
 		});
 
